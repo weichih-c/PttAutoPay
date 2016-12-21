@@ -2,6 +2,7 @@
 import telnetlib
 import sys
 import time
+import os
 
 host = 'ptt.cc'
 
@@ -80,6 +81,7 @@ def readToPaying():
     print u"進入娛樂與休閒"
     telnet.write("P\r\n")
     time.sleep(1)
+
     print u"進入PTT量販店"
     telnet.write("P\r\n")
     time.sleep(1)
@@ -87,7 +89,7 @@ def readToPaying():
 
 
 def payMoney(targetID, money, password) :
-    readToPaying()
+    
 
     print u"選擇給其他人P幣"
     telnet.write("0\r\n")
@@ -95,44 +97,67 @@ def payMoney(targetID, money, password) :
 
     print u"輸入Target ID : " + targetID
     telnet.write(targetID + '\r\n')
-    time.sleep(1)
+    # time.sleep(1)
 
     print u"輸入金額 : {}".format(money)
     telnet.write("{}\r\n".format(money))
-    time.sleep(1)
+    time.sleep(2)
 
     content = telnet.read_very_eager().decode('big5','ignore')
 
+    if u"確定進行交易嗎？ (y/N):" in content:
+        print u'認證尚未過期，可以直接進行交易'
+        telnet.write("y\r\n")
+        time.sleep(3)
+        content = telnet.read_very_eager().decode('big5','ignore')
+
+
     if u"請輸入您的密碼:" in content:
-        print u'輸入驗證密碼'
+        print u'防惡意驗證，需輸入密碼進行驗證'
         telnet.write(password + "\r\n")
-        time.sleep(5)
+        time.sleep(3)
         content = telnet.read_very_eager().decode('big5','ignore')
 
     if u"交易已完成，要修改紅包袋" in content:
-        print u'選擇不修改紅包袋'
+        print u'選擇不修改紅包袋內容'
         telnet.write("n\r\n")
         time.sleep(3)
         content = telnet.read_very_eager().decode('big5','ignore')
 
-    print "付款完成，回到首頁"
+
+    print u"付款完成，回到量販店"
+
     telnet.write("\r\n")
     time.sleep(1)
 
+def multiTarget(listFile, money, password):
+    f = open(os.path.join("", listFile), 'r')
+    for entry in f:
+       payMoney(entry, money, password)
+
+    f.close()
 
         
 def main():
     # get system arguments
-    userID, password, targetID, money = sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4]);
+    type, userID, password, targetID, money = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], int(sys.argv[5]);
 
-    telnetLogin(host, userID ,password)    
+    telnetLogin(host, userID ,password)   
 
-# ======================   Usage  ============================
+    readToPaying() 
+
+# ======================  Single Target Usage  ============================
 #python PttAutoPay.py [帳號] [密碼] [對象] [稅前金額]
 #python PttAutoPay.py account password target amountBeforeTax
-# ============================================================
+# =========================================================================
 
-    payMoney(targetID, money, password);
+    if type == '-s':
+      print "選擇單人"
+      payMoney(targetID, money, password);
+
+    if type == '-m':
+      print "選擇多人"
+      multiTarget(targetID, money, password);
 
     disconnect();
        
