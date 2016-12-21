@@ -151,21 +151,30 @@ def main():
       # get system arguments as variables
       type, userID, password, targetID, money = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], int(sys.argv[5]);
 
-      telnetLogin(host, userID ,password)   # 登入
-
-      readToPaying() # 進入到ptt量販店
-
-
       # 進行付款
       if type == '-s':
         print "發錢--選擇單人模式"
+        telnetLogin(host, userID ,password)   # 登入
+        readToPaying() # 進入到ptt量販店
         payMoney(targetID, money, password);
+        disconnect(); # 登出帳號
 
-      if type == '-m':
+      elif type == '-m':
         print "發錢--選擇多人模式"
+        telnetLogin(host, userID ,password)   # 登入
+        readToPaying() # 進入到ptt量販店
         multiTarget(targetID, money, password);
+        disconnect(); # 登出帳號
 
-      disconnect(); # 登出帳號
+      else:
+        print "請選擇發錢模式  單人 -s || 多人 -m\n"
+        print "============ Usage ============"
+        print u"Single   Target: python PttAutoPay.py -s [帳號] [密碼] [對象] [稅前金額]"
+        print u"Multiple Target: python PttAutoPay.py -m [帳號] [密碼] [對象清單] [稅前金額]"
+        print "==============================="
+        print "python PttAutoPay.py -s|-m  userID password  targetID|targetList moneyBeforeTax"
+        print "===============================\n"
+        sys.exit()
        
 
 if __name__=="__main__" :
