@@ -107,14 +107,14 @@ def payMoney(targetID, money, password) :
     if u"確定進行交易嗎？ (y/N):" in content:
         print u'認證尚未過期，可以直接進行交易'
         telnet.write("y\r\n")
-        time.sleep(2)
+        time.sleep(3)
         content = telnet.read_very_eager().decode('big5','ignore')
 
 
     if u"請輸入您的密碼:" in content:
         print u'防惡意驗證，需輸入密碼進行驗證'
         telnet.write(password + "\r\n")
-        time.sleep(2)
+        time.sleep(3)
         content = telnet.read_very_eager().decode('big5','ignore')
 
     if u"交易已完成，要修改紅包袋" in content:
@@ -158,11 +158,11 @@ def main():
 
       # 進行付款
       if type == '-s':
-        print "選擇單人"
+        print "發錢--選擇單人模式"
         payMoney(targetID, money, password);
 
       if type == '-m':
-        print "選擇多人"
+        print "發錢--選擇多人模式"
         multiTarget(targetID, money, password);
 
       disconnect(); # 登出帳號
