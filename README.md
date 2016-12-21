@@ -8,9 +8,15 @@ https://github.com/twtrubiks/PttAutoPush
 * 可以自動對指定ID發錢
 * 可選擇對單一對象或是指定清單內的所有對象
 
-# 使用方法
+# 使用方法 （Usage）
 ```
 $ python PttAutoPay.py [目標數量] [帳號] [密碼] [目標ID或檔案清單] [發錢金額]
+
+單一對象(Single Target)
+$ python PttAutoPay.py -s UserPttID Password TargetPttID MoneyAmount(beforeTax)
+
+多個對象(Multiple Target)
+$ python PttAutoPay.py -m UserPttID Password IDListFile MoneyAmount(beforeTax)
 
 ```
 
