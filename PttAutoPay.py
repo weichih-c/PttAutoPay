@@ -58,20 +58,66 @@ def telnetLogin(host, userID ,password) :
         print u"沒有可輸入帳號的欄位，網站可能掛了"
 
 def disconnect() :
-     print u"機器人登出中..."
-     # q = 上一頁，直到回到首頁為止，g = 離開，再見
-     telnet.write("qqqqqqqqqg\r\ny\r\n" )
-     time.sleep(3)
-     #content = telnet.read_very_eager().decode('big5','ignore')
-     #print content
-     print "----------------------------------------------"
-     print u"------------------ 登出完成 ------------------"
-     print "----------------------------------------------"
-     telnet.close()
+    print u"機器人登出中..."
+    # q = 上一頁，直到回到首頁為止，g = 離開，再見
+    telnet.write("qqqqqqqqqg\r\ny\r\n" )
+    time.sleep(3)
+    #content = telnet.read_very_eager().decode('big5','ignore')
+    #print content
+    print "----------------------------------------------"
+    print u"------------------ 登出完成 ------------------"
+    print "----------------------------------------------"
+    telnet.close()
 
 
-def payMoney(targetID, money) :
-    print "付款完成"
+def readToPaying():
+    telnet.write('\r\n');
+    time.sleep(1)      
+    print u"進入首頁"                          
+    telnet.write("q") ;   
+    time.sleep(1)
+
+    print u"進入娛樂與休閒"
+    telnet.write("P\r\n")
+    time.sleep(1)
+    print u"進入PTT量販店"
+    telnet.write("P\r\n")
+    time.sleep(1)
+
+
+
+def payMoney(targetID, money, password) :
+    readToPaying()
+
+    print u"選擇給其他人P幣"
+    telnet.write("0\r\n")
+    time.sleep(1)
+
+    print u"輸入Target ID : " + targetID
+    telnet.write(targetID + '\r\n')
+    time.sleep(1)
+
+    print u"輸入金額 : {}".format(money)
+    telnet.write("{}\r\n".format(money))
+    time.sleep(1)
+
+    content = telnet.read_very_eager().decode('big5','ignore')
+
+    if u"請輸入您的密碼:" in content:
+        print u'輸入驗證密碼'
+        telnet.write(password + "\r\n")
+        time.sleep(5)
+        content = telnet.read_very_eager().decode('big5','ignore')
+
+    if u"交易已完成，要修改紅包袋" in content:
+        print u'選擇不修改紅包袋'
+        telnet.write("n\r\n")
+        time.sleep(3)
+        content = telnet.read_very_eager().decode('big5','ignore')
+
+    print "付款完成，回到首頁"
+    telnet.write("\r\n")
+    time.sleep(1)
 
 
         
@@ -86,7 +132,7 @@ def main():
 #python PttAutoPay.py account password target amountBeforeTax
 # ============================================================
 
-    payMoney(targetID, money);
+    payMoney(targetID, money, password);
 
     disconnect();
        
