@@ -7,7 +7,6 @@ import os
 host = 'ptt.cc'
 
 
-
 def telnetLogin(host, userID ,password) :
     global telnet
     telnet = telnetlib.Telnet(host) # telnet connection
@@ -101,27 +100,27 @@ def payMoney(targetID, money, password) :
 
     print u"輸入金額 : {}".format(money)
     telnet.write("{}\r\n".format(money))
-    time.sleep(2)
+    time.sleep(1)
 
     content = telnet.read_very_eager().decode('big5','ignore')
 
     if u"確定進行交易嗎？ (y/N):" in content:
         print u'認證尚未過期，可以直接進行交易'
         telnet.write("y\r\n")
-        time.sleep(3)
+        time.sleep(2)
         content = telnet.read_very_eager().decode('big5','ignore')
 
 
     if u"請輸入您的密碼:" in content:
         print u'防惡意驗證，需輸入密碼進行驗證'
         telnet.write(password + "\r\n")
-        time.sleep(3)
+        time.sleep(2)
         content = telnet.read_very_eager().decode('big5','ignore')
 
     if u"交易已完成，要修改紅包袋" in content:
         print u'選擇不修改紅包袋內容'
         telnet.write("n\r\n")
-        time.sleep(3)
+        time.sleep(2)
         content = telnet.read_very_eager().decode('big5','ignore')
 
 
@@ -139,27 +138,34 @@ def multiTarget(listFile, money, password):
 
         
 def main():
-    # get system arguments
-    type, userID, password, targetID, money = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], int(sys.argv[5]);
+    if len(sys.argv) != 6:
+      print "============ Usage ============"
+      print u"Single   Target: python PttAutoPay.py -s [帳號] [密碼] [對象] [稅前金額]"
+      print u"Multiple Target: python PttAutoPay.py -m [帳號] [密碼] [對象清單] [稅前金額]"
+      print "==============================="
+      print "python PttAutoPay.py -s|-m  userID password  targetID|targetList moneyBeforeTax"
+      print "===============================\n"
+      sys.exit()
 
-    telnetLogin(host, userID ,password)   
+    else:
+      # get system arguments as variables
+      type, userID, password, targetID, money = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], int(sys.argv[5]);
 
-    readToPaying() 
+      telnetLogin(host, userID ,password)   # 登入
 
-# ======================  Single Target Usage  ============================
-#python PttAutoPay.py [帳號] [密碼] [對象] [稅前金額]
-#python PttAutoPay.py account password target amountBeforeTax
-# =========================================================================
+      readToPaying() # 進入到ptt量販店
 
-    if type == '-s':
-      print "選擇單人"
-      payMoney(targetID, money, password);
 
-    if type == '-m':
-      print "選擇多人"
-      multiTarget(targetID, money, password);
+      # 進行付款
+      if type == '-s':
+        print "選擇單人"
+        payMoney(targetID, money, password);
 
-    disconnect();
+      if type == '-m':
+        print "選擇多人"
+        multiTarget(targetID, money, password);
+
+      disconnect(); # 登出帳號
        
 
 if __name__=="__main__" :
