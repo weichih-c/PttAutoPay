@@ -45,6 +45,16 @@ ThisIsAPttID
 ```
 [發錢金額] : 輸入要發多少錢給每個目標ID
 
+# 範例 Example
+```
+Single   Target: 
+$ python PttAutoPay.py -s userPtt pwwwwd LovePink 112
+
+Multiple Target: 
+$ python PttAutoPay.py -m userPtt pwwwwd nameList.txt 112
+
+```
+
 ## Environment
 * Python 2.7.3
 
